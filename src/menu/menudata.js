@@ -29,6 +29,8 @@ const ghostPiece = ["TYPE_BOOL", "ghost", "ghostPieceFlag"];
 const modernLinesFlag = ["TYPE_BOOL", "modern lines", "modernLinesFlag"];
 const paceModifier = ["TYPE_FF_OFF", "Pace *100k", 16, "paceModifier"];
 const hzFlag = ["TYPE_BOOL", "HZ DISPLAY", "hzFlag"];
+// hz type is in Tournament for now because I don't know if it'll fit in Display.
+const hzType = ["TYPE_CHOICES", "HZ CTR TYPE", ["V6", "JC"], "jonasCupFlag"];
 const inputDisplayFlag = ["TYPE_BOOL", "Input Display", "inputDisplayFlag"];
 const disableFlash = ["TYPE_BOOL", "Disable Flash", "disableFlashFlag"];
 const secretGrading = ["TYPE_BOOL", "Secret Grading", "secretGradingFlag"];
@@ -299,6 +301,7 @@ const mainMenu = {
         linecapLevel,
         linecapLines,
         dasOnly,
+        hzType,
         tetrisOnlyFlag,
         vitsScoreFlag,
     ],

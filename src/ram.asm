@@ -249,7 +249,7 @@ debugNextCounter: .res 1 ; $611
 paceResult: .res 3 ; $612 ; 3 bytes
 paceSign: .res 1 ; $615
 
-hzRAM: .res 9; $616
+hzRAM: .res 10; $616
 hzTapCounter := hzRAM+0
 hzFrameCounter := hzRAM+1 ; 2 byte
 hzDebounceCounter := hzRAM+3 ; 1 byte
@@ -257,8 +257,9 @@ hzTapDirection := hzRAM+4 ; 1 byte
 hzResult := hzRAM+5 ; 2 byte
 hzSpawnDelay := hzRAM+7 ; 1 byte
 hzPalette := hzRAM+8 ; 1 byte
+tapBufferButtons := hzRAM+9 ; 1 byte
 inputLogCounter := presetIndex ; reusing presetIndex
-    .res 2
+    .res 1
 tqtyCurrent: .res 1 ; $621
 tqtyNext: .res 1 ; $622
 

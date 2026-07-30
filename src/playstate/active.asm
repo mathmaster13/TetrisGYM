@@ -10,7 +10,6 @@ playState_playerControlsActiveTetrimino:
 
         jsr shift_tetrimino
         jsr rotate_tetrimino
-
         jsr drop_tetrimino
 
 playState_playerControlsActiveTetrimino_return:
@@ -479,6 +478,13 @@ shift_tetrimino:
         ; dasOnlyFlag
         lda dasOnlyShiftDisabled
         beq @dasOnlyEnd
+        lda jonasCupFlag
+        beq @V6ShiftDisabled
+; JC shift disabled
+        lda #0
+        sta dasOnlyShiftDisabled
+        rts
+@V6ShiftDisabled:
         lda heldButtons
         and #BUTTON_LEFT|BUTTON_RIGHT
         beq @dasOnlyEnd
@@ -548,7 +554,7 @@ shift_tetrimino:
         bne @restoreX
         lda #$03
         sta soundEffectSlot1Init
-        jmp @ret
+        jmp registerShift
 
 @notPressingRight:
         lda heldButtons
@@ -563,7 +569,7 @@ shift_tetrimino:
         bne @restoreX
         lda #$03
         sta soundEffectSlot1Init
-        jmp @ret
+        jmp registerShift
 
 @restoreX:
         lda originalY
@@ -605,5 +611,28 @@ shift_tetrimino:
         bne @leftNotPressed
         lda dasValueDelay
         sta autorepeatX
-@leftNotPressed:
+@leftNotPressed: ; same as registerShift
+registerShift: ; TODO check anyDAS compat
+        lda jonasCupFlag
+        beq @ret
+        lda newlyPressedButtons
+        and #BUTTON_LEFT+BUTTON_RIGHT
+        beq @notTapped
+        inc hzTapCounter
+        jmp calculate_hz ; returns from here
+@notTapped:
+        lda heldButtons
+        and #BUTTON_LEFT+BUTTON_RIGHT
+        beq @ret
+        ; treat any DAS shift as the potential first tap of a new string
+        ; this keeps scheduling correct for tap strings after DAS,
+        ; such as when "perfect first frame tap" was from buffered DAS,
+        ; or when the player attempts a "multi-quicktap"
+        lda #$00
+        sta hzTapCounter
+        inc hzTapCounter
+        sta hzFrameCounter+0
+        sta hzFrameCounter+1
+        sta hzDebounceCounter
+@ret:
         rts
