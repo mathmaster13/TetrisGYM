@@ -619,7 +619,14 @@ registerShift: ; TODO check anyDAS compat
         and #BUTTON_LEFT+BUTTON_RIGHT
         beq @notTapped
         inc hzTapCounter
+        lda prevMovementWasDAS
+        bne @noHzCalc
+        ; we want to reset prevMovementWasDAS to 0 anyway
         jmp calculate_hz ; returns from here
+@noHzCalc:
+        lda #$00
+        sta prevMovementWasDAS
+        jmp hzCalcEnd
 @notTapped:
         lda heldButtons
         and #BUTTON_LEFT+BUTTON_RIGHT
@@ -631,8 +638,10 @@ registerShift: ; TODO check anyDAS compat
         lda #$00
         sta hzTapCounter
         inc hzTapCounter
+        sta prevMovementWasDAS
+        inc prevMovementWasDAS
         sta hzFrameCounter+0
         sta hzFrameCounter+1
         sta hzDebounceCounter
 @ret:
-        rts
+        jmp hzCalcEnd

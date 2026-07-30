@@ -16,12 +16,12 @@ hzStart: ; called in playState_spawnNextTetrimino, gameModeState_initGameState, 
         lda #0
         sta hzTapCounter
         sta tapBufferButtons ; only used in JC, copied from JC
-        ; TODO for some reason, in JC, hzDebounceThreshold is put into the buffer. no clue why, but it is nonsense imo
+        sta prevMovementWasDAS
         lda #hzDebounceThreshold
         sta hzDebounceCounter
         ; V6: frame counter is reset on first tap.
         ; I think it's fine to reset it on first tap for JC as well.
-        ; TODO test that. speedtest should always use v6 first tap
+
         rts
 
 hzControl: ; called in playState_playerControlsActiveTetrimino, gameTypeLoopContinue, speedTestControl
@@ -85,7 +85,7 @@ hzControl: ; called in playState_playerControlsActiveTetrimino, gameTypeLoopCont
         sta newlyPressedButtons
         lda #$00
         sta tapBufferButtons    ; clear buffer
-        lda newlyPressedButtons ; set up A as appropriate for @tapped logic
+        lda newlyPressedButtons ; set up A as appropriate for hzTap logic
         and #BUTTON_LEFT+BUTTON_RIGHT
 hzTap:
         clc
@@ -133,12 +133,14 @@ hzTap:
         sta dasOnlyShiftDisabled
 
 ; DAS only mode stuff; skip it if we aren't in DAS mode.
-; Speed test is not DAS mode, since it never was in V6,
+; Speed test gets an exception; DAS mode does not apply in speedtest because in V6 it never would apply.
         lda practiseType
         cmp #MODE_SPEED_TEST
         beq @clearBuffer
         lda dasOnlyFlag
         beq @clearBuffer ; clear buffer and return
+        lda prevMovementWasDAS ; implies JC ROM
+        bne @clearBuffer ; allow all quicktaps
 
         lda #$08
         clc
@@ -195,9 +197,7 @@ calculate_hz: ; done after any taps are done
         ; ignore 1 tap
         lda hzTapCounter
         cmp #2
-        bcc @calcEnd
-
-        ; TODO in JC mode, ignore 2taps where the first tap is DAS
+        bcc hzCalcEnd
 
         lda #$7A
         sta factorB24
@@ -262,7 +262,7 @@ calculate_hz: ; done after any taps are done
         lda bcd32+1
         sta hzResult
 
-@calcEnd:
+hzCalcEnd:
 
         ; update game UI
         lda renderFlags
@@ -297,9 +297,9 @@ checkNegativeDelay:
 @ret:
         rts
 
-dasLimitLookup: ; JC table.
-        .byte $FF, $FF, 11, 17, 23, 29, 35, 41 , 47, 53 ;, 59
-        .byte $FF, $FF, 7, 11, 15, 19, 23, 27, 31, 35 ; PAL
+dasLimitLookup: ; JC table, modified to police 2taps
+        .byte $FF, 4, 11, 17, 23, 29, 35, 41 , 47, 53 ;, 59
+        .byte $FF, 3, 7, 11, 15, 19, 23, 27, 31, 35 ; PAL
         ; V6 table TODO decide on something less lazy than this to implement the differences.
         .byte $FF, 3, 10, 17, 23, 29, 35, 41 , 47, 53 ;, 59
         .byte $FF, 2, 6, 11, 15, 19, 23, 27, 31, 35 ; PAL

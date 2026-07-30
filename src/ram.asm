@@ -249,7 +249,7 @@ debugNextCounter: .res 1 ; $611
 paceResult: .res 3 ; $612 ; 3 bytes
 paceSign: .res 1 ; $615
 
-hzRAM: .res 10; $616
+hzRAM: .res 11; $616
 hzTapCounter := hzRAM+0
 hzFrameCounter := hzRAM+1 ; 2 byte
 hzDebounceCounter := hzRAM+3 ; 1 byte
@@ -258,8 +258,10 @@ hzResult := hzRAM+5 ; 2 byte
 hzSpawnDelay := hzRAM+7 ; 1 byte
 hzPalette := hzRAM+8 ; 1 byte
 tapBufferButtons := hzRAM+9 ; 1 byte
+prevMovementWasDAS := hzRAM+10 ; a small, not strictly necessary enhancement to JC's DAS mode.
+; ^ can be cut if you restore the original JC behavior of 2taps having no limit whatsoever, but makes the hz counter nicer.
 inputLogCounter := presetIndex ; reusing presetIndex
-    .res 1
+    ; there a was .res 2 here until I made hzRAM 11 bytes instead of 9 and added the buffer variable
 tqtyCurrent: .res 1 ; $621
 tqtyNext: .res 1 ; $622
 
