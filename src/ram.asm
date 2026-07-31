@@ -284,14 +284,14 @@ seededPieces: .res 1
 killX2Flag: .res 1
 skipNormalPlayfieldRender: .res 1
 
-kbReadState: .res 1 ; $063F - used for high score entry
-kbHeldInput: .res 1 ; $0640 - high score input throttling
-kbRawInput: .res 9 ; $0641  - all 72 keys' input
+kbReadState: .res 1 ; $0643 - used for high score entry
+kbHeldInput: .res 1 ; $0644 - high score input throttling
+kbRawInput: .res 9 ; $0645  - all 72 keys' input
 kbInputThrottle: .res 1
 
 ; used to track state of high score entry screen.  Can possibly use the address of the nmi interrupted
 ; routine in the stack to track instead
-highScoreEntryActive: .res 1  ; $064A
+highScoreEntryActive: .res 1  ; $064F
 trtLines: .res 2 ; fix for now for transition mode/trt compat
 
 menuStack: .res 28
