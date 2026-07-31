@@ -167,7 +167,7 @@ hzTap:
 @NTSCDASOnly:
         lda dasLimitLookup, x
         cmp hzFrameCounter
-        bmi @clearBuffer      ; if tap is allowed, clear 1-frame buffer and return
+        bcc @clearBuffer      ; if tap is allowed, clear 1-frame buffer and return
 @disableShift:
         lda #1
         sta dasOnlyShiftDisabled
@@ -186,7 +186,7 @@ hzTap:
         cmp #MODE_SPEED_TEST
         beq @incAndRet
         lda jonasCupFlag
-        bne @ret ; return
+        bne @ret ; return - hz is computed later
 @incAndRet:
         inc hzTapCounter
         jmp calculate_hz ; hz gets computed here
